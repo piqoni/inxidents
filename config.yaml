@@ -1,0 +1,17 @@
+- name: Service1
+  endpoint: https://www.google.com
+  frequency: 1m
+  expectedCode: 200
+  expectedBody: "Service 1 is healthy"
+
+- name: Service2
+  endpoint: https://example.com/service2
+  frequency: 5m
+  expectedCode: 204
+  expectedBody: ""
+
+- name: Service3
+  endpoint: https://example.com/service3
+  frequency: 30s
+  expectedCode: 200
+  expectedBody: "Welcome to Service 3"
