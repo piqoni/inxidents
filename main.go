@@ -4,17 +4,14 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/r3labs/sse/v2"
+	"gopkg.in/yaml.v2"
 )
-
-// type Service struct {
-// 	URL       string
-// 	frequency time.Duration
-// }
 
 // func newService(url string, frequency time.Duration) *Service {
 // 	return &Service{
@@ -36,23 +33,24 @@ func checkURLResponse(url string) (bool, error) {
 
 	// Check the HTTP status code
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("HTTP request failed with status code: %d", resp.StatusCode)
-		return false, fmt.Errorf("HTTP request failed with status code: %d", resp.StatusCode)
+		return false, fmt.Errorf(resp.Status)
 	}
 	return true, nil
 }
 
-func sendStream(server *sse.Server, up bool) {
-	message := ""
+func sendStream(server *sse.Server, up bool, err error) {
+
+	// create message containing the error message
+	text := ""
 	if up {
-		message = "UP"
+		text = "<div class=\"up\">ServiceName</div>"
 	} else {
-		message = "DOWN"
+		// text = "<div class=\"down\">ServiceName</div>"
+		text = fmt.Sprintf("<div class=\"down\">%s</div>", err)
 	}
 	server.Publish("messages", &sse.Event{
-		Data: []byte(message),
+		Data: []byte(text),
 	})
-	// Publish a payload to the stream
 }
 
 func sendSlackNotification(server *sse.Server, message string, webhookURL string, up bool) {
@@ -91,9 +89,33 @@ func sendSlackNotification(server *sse.Server, message string, webhookURL string
 var indexHTML embed.FS
 
 func main() {
+
+	// Read the service.yaml file
+	yamlFile, err := os.ReadFile("config.yaml")
+	if err != nil {
+		log.Fatalf("Error reading YAML file: %v", err)
+	}
+
+	// Create a slice to store the loaded services
+	var services []Service
+
+	// Unmarshal the YAML data into the services slice
+	if err := yaml.Unmarshal(yamlFile, &services); err != nil {
+		log.Fatalf("Error unmarshaling YAML: %v", err)
+	}
+
+	// Print the loaded services
+	for _, service := range services {
+		fmt.Printf("Name: %s\n", service.Name)
+		fmt.Printf("Endpoint: %s\n", service.Endpoint)
+		fmt.Printf("Frequency: %s\n", service.Frequency)
+		fmt.Printf("ExpectedCode: %d\n", service.ExpectedCode)
+		fmt.Printf("ExpectedBody: %s\n", service.ExpectedBody)
+		fmt.Println()
+	}
+
 	// read from os environment variables for slackurl webhook
 	webhookURL := os.Getenv("SLACK_WEBHOOK_URL")
-
 	message := "Hello, World!"
 
 	server := sse.New()
@@ -133,7 +155,7 @@ func main() {
 	go func() {
 		for {
 			up, err := checkURLResponse("http://localhost:8080/up")
-			sendStream(server, up)
+			sendStream(server, up, err)
 			if err != nil {
 				sendSlackNotification(server, message, webhookURL, up)
 			}
