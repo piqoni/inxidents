@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"net/http"
 	"os"
@@ -41,17 +42,22 @@ func checkURLResponse(url string) (bool, error) {
 	return true, nil
 }
 
-func sendStream(server *sse.Server, message string) {
-	now := time.Now()
+func sendStream(server *sse.Server, up bool) {
+	message := ""
+	if up {
+		message = "UP"
+	} else {
+		message = "DOWN"
+	}
 	server.Publish("messages", &sse.Event{
-		Data: []byte(now.Format("2006-01-02 15:04:05")),
+		Data: []byte(message),
 	})
 	// Publish a payload to the stream
 }
 
 func sendSlackNotification(server *sse.Server, message string, webhookURL string, up bool) {
 	// get current time and format it as string
-
+	return
 	data := fmt.Sprintf(`{"text":"%s"}`, message)
 
 	// Create a POST request with the JSON data
@@ -81,6 +87,9 @@ func sendSlackNotification(server *sse.Server, message string, webhookURL string
 	}
 }
 
+//go:embed templates
+var indexHTML embed.FS
+
 func main() {
 	// read from os environment variables for slackurl webhook
 	webhookURL := os.Getenv("SLACK_WEBHOOK_URL")
@@ -91,8 +100,8 @@ func main() {
 	server.CreateStream("messages")
 
 	// Create a new Mux and set the handler
-	mux := http.NewServeMux()
-	mux.HandleFunc("/events", func(w http.ResponseWriter, r *http.Request) {
+	// mux := http.NewServeMux()
+	http.HandleFunc("/events", func(w http.ResponseWriter, r *http.Request) {
 		go func() {
 			// Received Browser Disconnection
 			<-r.Context().Done()
@@ -104,21 +113,27 @@ func main() {
 	})
 
 	// add an /up endpoint that returns a 200 OK
-	mux.HandleFunc("/up", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/up", func(w http.ResponseWriter, r *http.Request) {
 		// Return with 200 OK if the current time seconds are odd
 		if time.Now().Unix()%2 == 1 {
 			w.WriteHeader(http.StatusOK)
 		} else {
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}
+		// w.WriteHeader(http.StatusOK)
 
+	})
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Serve the index.html file
+		http.ServeFile(w, r, "templates/index.html")
 	})
 
 	// Start a goroutine that sends a Slack notification every minute
 	go func() {
 		for {
 			up, err := checkURLResponse("http://localhost:8080/up")
-			sendStream(server, message)
+			sendStream(server, up)
 			if err != nil {
 				sendSlackNotification(server, message, webhookURL, up)
 			}
@@ -127,7 +142,7 @@ func main() {
 		}
 	}()
 
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(":8080", nil)
 
 	// Keep the main program running
 	// fmt.Println("Press Ctrl+C to exit")
