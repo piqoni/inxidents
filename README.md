@@ -1,6 +1,6 @@
 <h1 align="center"> in⧕idents </h1>
 
-Inxidents is a minimal configuration, open-source incident management software with alerts and dashboard for your HTTP/S services.
+Inxidents is a minimal configuration, open-source incident management software with alerts and dashboard for your HTTP/S services written in Go.
 
 **Current Features:**
 - Real-time (SSE) Health Dashboard of your services. Perfect for office screens or similar environments.
