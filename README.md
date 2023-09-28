@@ -1,6 +1,4 @@
 <h1 align="center"> in⧕idents </h1>
-
-# intro
 In⧕idents is an open-source incident management software. It  supports:
 - Real-time (SSE) Health Dashboard of your services. Perfect for offices or similar environments.
 - Slack Alerts whenever a service goes down or when in⧕idents itself fails to run.
