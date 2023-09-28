@@ -32,14 +32,44 @@ Sample service:
 - **Name**: Name of service, currently it needs to be unique for each service you check. 
 - **Endpoint**: HTTP/S endpoint
 - **Frequency**:  Frequency of the health check, examples: "300ms", "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
-
+3. To get Slack alerts, make sure the app has access to an environmental variable called **SLACK_WEBHOOK_URL** containing the incoming slack webhook url. [More info on it here](https://api.slack.com/messaging/webhooks)
 
 ## Deploy on fly.io
 1. Install [flytcl](https://fly.io/docs/hands-on/install-flyctl/)
 2. Run ```flyctl launch```(answer no to DB or Volume creations)
 3. Run ```flyctl deploy``` to deploy
 
+To receive Slack alerts when deploying to fly.io you can add the SLACK_WEBHOOK_URL in the fly.toml file
+```
+[env]
+   SLACK_WEBHOOK_URL = "YOUR INCOMING SLACK WEBHOOK URL"
+```
+
 ## Other deployment methods
 You can deploy it via docker as it is containarized or if you get the self-contained binary, you can use systemd to keep the process running.
 
 TODO: Needs more documentation here.
+
+
+## Tech comments / Architecture
+There is no database as of now. Apart from the configuration file everything else happens in-memory. The only persistent data history can be found on Slack alerts and application log files. 
+```mermaid
+flowchart TB
+  subgraph MainThread
+    Main[main reads config.yaml]
+  end
+
+  subgraph Always Running Goroutines
+    Service1[Service 1 Check]
+    Service2[Service 2 Check]
+    Service3[Service 3 Check]
+  end
+
+  Main -->|goroutine 1| Service1
+  Main -->|goroutine 2| Service2
+  Main -->|goroutine 3| Service3
+  Service1 -->|SSE Stream| Browser
+  Service2 -->|SSE Stream| Browser
+  Service3 -->|SSE Stream | Browser
+```
+
