@@ -4,80 +4,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⧕</text></svg>">
+
     <title>Incidents</title>
     <style>
         html * {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
         body {
             background-color: #e4efe9;
+            background:
+                linear-gradient(-90deg, rgba(0, 0, 0, .05) 1px, transparent 1px),
+                linear-gradient(rgba(0, 0, 0, .05) 1px, transparent 1px),
+                linear-gradient(-90deg, rgba(0, 0, 0, .04) 1px, transparent 1px),
+                linear-gradient(rgba(0, 0, 0, .04) 1px, transparent 1px),
+                linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+                linear-gradient(-90deg, #aaa 1px, transparent 1px),
+                linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+                linear-gradient(#aaa 1px, transparent 1px),
+                #f2f2f2;
+            background-size:
+                4px 4px,
+                4px 4px,
+                80px 80px,
+                80px 80px,
+                80px 80px,
+                80px 80px,
+                80px 80px,
+                80px 80px;
         }
 
-        .down {
-            margin: 2px;
-            width: 400px;
-            height: 200px;
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+
+        .red {
             background: #F52549;
-            display: flex;
-            /* Use flexbox for centering */
-            justify-content: center;
-            /* Center horizontally */
-            align-items: center;
-            /* Center vertically */
-            text-align: center;
-            /* Center text horizontally (optional, depending on your text content) */
-            border-radius: 0px;
-
         }
 
+        .green {
+            background: #00CC99;
+        }
 
-        .up {
+        .rectangle {
             margin: 2px;
-            width: 400px;
+            width: 100%;
             height: 200px;
-            background: rgb(36, 161, 72);
-            background: #50c9c3;
             display: flex;
-            /* Use flexbox for centering */
             justify-content: center;
-            /* Center horizontally */
             align-items: center;
-            /* Center vertically */
             text-align: center;
-            /* Center text horizontally (optional, depending on your text content) */
-            border-radius: 0px;
+            border-radius: 5px;
+            box-shadow: 5px 5px lightgray;
+            position: relative;
         }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: white;
+            border-bottom: 1px;
+            animation: progressAnimation linear infinite;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes progressAnimation {
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .brand {
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <h1>Incidents</h1>
-    <div hx-ext="sse" sse-connect="/events?stream=messages" sse-swap="message">
-    </div>
-<ul id="list">
-    <!-- List items will be appended here -->
-</ul>
+    <h1 class="brand"> in⧕idents</h1>
+    <div class="alert"></div>
+    <div class="grid-container"></div>
 
-    <div class="message"></div>
-
-    <!-- Include the htmx script -->
-    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
+    <!-- TODO Include htmx for ack feature -->
+    <!-- <script src="https://unpkg.com/htmx.org@1.9.6"></script> -->
+    <!-- <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script> -->
     <script>
         const evtSource = new EventSource("/events?stream=messages");
-
+        const serviceDivs = new Map();
         evtSource.onmessage = (event) => {
-                const newElement = document.createElement("li");
-                const eventList = document.getElementById("list");
+            const eventData = JSON.parse(event.data);
+            if (serviceDivs.has(eventData.name)) {
+                const existingDiv = serviceDivs.get(eventData.name);
+                // if (existingDiv.firstChild) {
+                //     existingDiv.removeChild(existingDiv.firstChild);
+                // }
 
-                newElement.textContent = `message: ${event.data}`;
-                eventList.appendChild(newElement);
-                console.log(event.data)
-            };
+                if (eventData.up) {
+                    existingDiv.classList.add("green");
+                    existingDiv.classList.remove("red");
+                    // var textNode = document.createTextNode(eventData.name);
+                    // existingDiv.appendChild(textNode); // Set text to Service Name
+                } else {
+                    existingDiv.classList.add("red");
+                    existingDiv.classList.remove("green");
+                    // existingDiv.scrollIntoView();
+                    // existingDiv.textContent = eventData.error; // Set text to error message
+                    // var textNode = document.createTextNode(eventData.error);
+                    // existingDiv.appendChild(textNode); // Set text to Service Name
+                }
+            } else {
+                // If it doesn't exist, create a new <div> element and add it to the map
+                const newElement = document.createElement("div");
 
+                if (eventData.up) {
+                    newElement.classList.add("green");
+                    newElement.textContent = eventData.name; // Set text to Service Name
+                } else {
+                    newElement.classList.add("red");
+                    newElement.textContent = eventData.name; // Set text to error message
+                    // newElement.textContent = eventData.error; // Set text to error message
+                    // newElement.scrollIntoView();
+                }
 
+                newElement.classList.add("rectangle");
+                // newElement.setAttribute("name", eventData.name);
+
+                // Create a child <div> for the progress bar
+                const progressBar = document.createElement("div");
+                progressBar.classList.add("progress-bar");
+                progressBar.setAttribute("name", eventData.name);
+
+                // Append the progress bar as a child of newElement
+                newElement.appendChild(progressBar);
+
+                // Append the new <div> element to the grid container and store it in the map
+                const gridContainer = document.querySelector(".grid-container");
+
+                gridContainer.appendChild(newElement);
+                serviceDivs.set(eventData.name, newElement);
+            }
+
+            // const progressBar = document.querySelector('.progress-bar');
+            progressBar = document.querySelector('[name="' + eventData.name + '"]');
+
+            // Calculate the animation duration based on the 'seconds' variable
+            const animationDuration = eventData.frequency * 1000 + 'ms';
+
+            // Apply the animation duration to the progress bar
+            if (progressBar) {
+                progressBar.style.animationDuration = animationDuration;
+            }
+        };
+
+    // TODO Handle SSE errors
+    //     evtSource.onerror = (event) => {
+    //         gridContainer = document.querySelector(".grid-container")
+    //         gridContainer.style.fontSize = "600px";
+    //         gridContainer.style.color = "red";
+
+    //         alertContainer = document.querySelector(".alert");
+    //         if (event.readyState === EventSource.CLOSED) {
+    //             gridContainer.textContent = "⧕⧕⧕⧕⧕";
+    //             alertContainer.textContent = "Connection to server lost.";
+    //         } else {
+    //             gridContainer.textContent = "⧕⧕⧕⧕⧕";
+    //             alertContainer.textContent = "Server is down or an error occurred.";
+
+    //         }
+    //     }
     </script>
 
 </body>

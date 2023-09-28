@@ -1,17 +1,29 @@
-- name: Service1
+- name: Github
+  endpoint: https://www.github.com
+  frequency: 5s
+  expectedCode: 200
+
+- name: Google
   endpoint: https://www.google.com
   frequency: 1m
   expectedCode: 200
-  expectedBody: "Service 1 is healthy"
 
-- name: Service2
-  endpoint: https://example.com/service2
-  frequency: 5m
-  expectedCode: 204
-  expectedBody: ""
-
-- name: Service3
-  endpoint: https://example.com/service3
-  frequency: 30s
+- name: My Unstable Service
+  endpoint: http://localhost:8080/unstable
+  frequency: 1s
   expectedCode: 200
-  expectedBody: "Welcome to Service 3"
+
+- name: Always Down Service
+  endpoint: http://localhost:8080/asdfasdfj
+  frequency: 5s
+  expectedCode: 200
+
+- name: Inxidents
+  endpoint: https://incidents.fly.dev/
+  frequency: 10s
+  expectedCode: 200
+
+- name: Shipping Service API
+  endpoint: https://www.google.com
+  frequency: 10m
+  expectedCode: 200
