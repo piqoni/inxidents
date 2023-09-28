@@ -17,7 +17,8 @@ Inxidents is a minimal configuration, open-source incident management software w
 # Demo
 [Click for Demo Dashboard](https://incidents.fly.dev/)
 
-https://github.com/piqoni/incidents/assets/3144671/5a6f1466-ff29-455d-b0af-dd60f11b8d8b
+<img width="1439" alt="image" src="https://github.com/piqoni/inxidents/assets/3144671/0966529b-87bc-4c11-b79f-47c6c0594eb6">
+
 
 # Installation / Deployment
 1. ```cp config.dev.yaml config.yaml```
