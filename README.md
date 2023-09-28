@@ -53,7 +53,7 @@ TODO: Needs more documentation here.
 
 
 ## Tech comments / Architecture
-There is no database as of now. Apart from the configuration file everything else happens in-memory. The only persistent data history can be found on Slack alerts and application log files. 
+There is no database by design. Apart from the configuration file everything else happens in-memory. The only persistent data history can be found on Slack alerts and application log files. 
 ```mermaid
 flowchart TB
   subgraph MainThread
