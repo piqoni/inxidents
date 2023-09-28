@@ -20,10 +20,5 @@
 
 - name: Inxidents
   endpoint: https://incidents.fly.dev/
-  frequency: 10s
-  expectedCode: 200
-
-- name: Shipping Service API
-  endpoint: https://www.google.com
-  frequency: 10m
+  frequency: 2h45m
   expectedCode: 200
