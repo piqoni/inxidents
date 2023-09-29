@@ -10,7 +10,7 @@ Inxidents is a minimal configuration, open-source incident management software w
 
 **Upcoming features:**
 - Acknowledgement Button for down services so alerts stop. 
-- Add "expectedString" configuration for more functional testing.
+- Add POST checks, and "expectedString" configuration for more functional testing.
 - Recovered Alert
 - ... ideas and suggestions are welcome
 
