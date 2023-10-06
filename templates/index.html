@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,7 +97,6 @@
 
     <!-- TODO Include htmx for ack feature -->
     <!-- <script src="https://unpkg.com/htmx.org@1.9.6"></script> -->
-    <!-- <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script> -->
     <script>
         const evtSource = new EventSource("/events?stream=messages");
         const serviceDivs = new Map();
@@ -106,9 +104,6 @@
             const eventData = JSON.parse(event.data);
             if (serviceDivs.has(eventData.name)) {
                 const existingDiv = serviceDivs.get(eventData.name);
-                // if (existingDiv.firstChild) {
-                //     existingDiv.removeChild(existingDiv.firstChild);
-                // }
 
                 if (eventData.up) {
                     existingDiv.classList.add("green");
@@ -160,31 +155,11 @@
 
             // Calculate the animation duration based on the 'seconds' variable
             const animationDuration = eventData.frequency * 1000 + 'ms';
-
             // Apply the animation duration to the progress bar
             if (progressBar) {
                 progressBar.style.animationDuration = animationDuration;
             }
         };
-
-    // TODO Handle SSE errors
-    //     evtSource.onerror = (event) => {
-    //         gridContainer = document.querySelector(".grid-container")
-    //         gridContainer.style.fontSize = "600px";
-    //         gridContainer.style.color = "red";
-
-    //         alertContainer = document.querySelector(".alert");
-    //         if (event.readyState === EventSource.CLOSED) {
-    //             gridContainer.textContent = "⧕⧕⧕⧕⧕";
-    //             alertContainer.textContent = "Connection to server lost.";
-    //         } else {
-    //             gridContainer.textContent = "⧕⧕⧕⧕⧕";
-    //             alertContainer.textContent = "Server is down or an error occurred.";
-
-    //         }
-    //     }
     </script>
-
 </body>
-
 </html>
