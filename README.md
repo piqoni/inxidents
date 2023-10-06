@@ -69,8 +69,10 @@ flowchart TB
   Main -->|goroutine 1| Service1
   Main -->|goroutine 2| Service2
   Main -->|goroutine 3| Service3
-  Service1 -->|SSE Stream| Browser
-  Service2 -->|SSE Stream| Browser
-  Service3 -->|SSE Stream | Browser
+subgraph Browser Dashboard
+  Service1 -->|SSE Stream| EventSource
+  Service2 -->|SSE Stream| EventSource
+  Service3 -->|SSE Stream | EventSource
+end
 ```
 
