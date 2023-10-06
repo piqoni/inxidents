@@ -10,14 +10,15 @@ Inxidents is a minimal configuration, open-source incident management software w
 
 **Upcoming features:**
 - Acknowledgement Button for down services so alerts stop. 
-- Add "expectedString" configuration for more functional testing.
+- Add POST checks, and "expectedString" configuration for more functional testing.
 - Recovered Alert
 - ... ideas and suggestions are welcome
 
 # Demo
 [Click for Demo Dashboard](https://incidents.fly.dev/)
 
-https://github.com/piqoni/incidents/assets/3144671/5a6f1466-ff29-455d-b0af-dd60f11b8d8b
+<img width="1439" alt="image" src="https://github.com/piqoni/inxidents/assets/3144671/0966529b-87bc-4c11-b79f-47c6c0594eb6">
+
 
 # Installation / Deployment
 1. ```cp config.dev.yaml config.yaml```
@@ -52,7 +53,7 @@ TODO: Needs more documentation here.
 
 
 ## Tech comments / Architecture
-There is no database as of now. Apart from the configuration file everything else happens in-memory. The only persistent data history can be found on Slack alerts and application log files. 
+There is no database by design. Apart from the configuration file everything else happens in-memory. The only persistent data history can be found on Slack alerts and application log files. 
 ```mermaid
 flowchart TB
   subgraph MainThread
