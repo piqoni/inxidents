@@ -33,7 +33,7 @@ Sample service:
 - **Name**: Name of service, currently it needs to be unique for each service you check. 
 - **Endpoint**: HTTP/S endpoint
 - **Frequency**:  Frequency of the health check, examples: "300ms", "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
-3. To get Slack alerts, make sure the app has access to an environmental variable called **SLACK_WEBHOOK_URL** containing the incoming slack webhook url. [More info on it here](https://api.slack.com/messaging/webhooks)
+3. To get Slack alerts, add an environmental variable called **SLACK_WEBHOOK_URL** containing the incoming slack webhook url. [More info on it here](https://api.slack.com/messaging/webhooks)
 
 ## Deploy on fly.io
 1. Install [flytcl](https://fly.io/docs/hands-on/install-flyctl/)
