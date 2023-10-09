@@ -39,11 +39,9 @@ func TestCheckURLResponse(t *testing.T) {
 
 // TestSendStream tests the sendStream function.
 func TestSendStream(t *testing.T) {
-	// Create a dummy SSE server for testing purposes
 	server := sse.New()
 	server.CreateStream("messages")
 
-	// Create a test service
 	testService := Service{
 		Name:         "TestService",
 		Endpoint:     "http://localhost:8081/test",
@@ -55,12 +53,9 @@ func TestSendStream(t *testing.T) {
 	err := fmt.Errorf("No error")
 	sendStream(server, testService, err)
 
-	// You can add assertions here to check the behavior of sendStream
-	// For example, you can assert that the SSE server received the expected event.
-
 	// Test the sendStream function with a test service and an error
 	err = fmt.Errorf("Test error")
 	sendStream(server, testService, err)
 
-	// You can add assertions here to check the behavior of sendStream
+	// TODO
 }
