@@ -10,15 +10,15 @@
 
 - name: My Unstable Service
   endpoint: http://localhost:8080/unstable
-  frequency: 1s
+  frequency: 25s
   expectedCode: 200
 
 - name: Always Down Service
   endpoint: http://localhost:8080/asdfasdfj
-  frequency: 5s
+  frequency: 20s
   expectedCode: 200
 
 - name: Inxidents
   endpoint: https://incidents.fly.dev/
-  frequency: 2h45m
+  frequency: 1h45m
   expectedCode: 200

@@ -104,7 +104,7 @@ func sendSlackNotification(message string) {
 	}
 }
 
-//go:embed templates/*
+//go:embed templates/* static/*
 var templatesFS embed.FS
 
 func main() {
@@ -185,5 +185,6 @@ func main() {
 		}(service)
 	}
 
+	http.Handle("/static/", http.FileServer(http.FS(templatesFS)))
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
