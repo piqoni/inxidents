@@ -5,7 +5,7 @@ Inxidents is a minimal configuration, open-source incident management software w
 **Current Features:**
 - Real-time (SSE) Health Dashboard of your services. Perfect for office screens or similar environments.
 - Slack Alerts whenever a service goes down.
-- Visually see when the next healthcheck will occurr (the white progresbar)
+- Visually see when the next healthcheck will occurr (the white progressbar)
 - Small project with simple configuration. Easy to hack and further extend for your needs.
 
 **Upcoming features:**
