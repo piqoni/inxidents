@@ -57,7 +57,7 @@ There is no database by design for the time being (if needed in the future, it w
 ```mermaid
 flowchart TB
   subgraph MainThread
-    Main[main reads config.yaml]
+    Main[read services in config.yaml]
   end
 
   subgraph Always Running Goroutines
