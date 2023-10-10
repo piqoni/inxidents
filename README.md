@@ -1,5 +1,15 @@
 <h1 align="center"> in⧕idents </h1>
-
+<div align="center"><p>
+    <a href="https://github.com/piqoni/inxidents/pulse">
+      <img alt="Last commit" src="https://img.shields.io/github/last-commit/piqoni/inxidents?style=for-the-badge&logo=starship&color=8bd5ca&logoColor=D9E0EE&labelColor=302D41"/>
+    </a>
+    <a href="https://github.com/piqoni/inxidents/blob/main/LICENSE">
+      <img alt="License" src="https://img.shields.io/github/license/piqoni/inxidents?style=for-the-badge&logo=starship&color=ee999f&logoColor=D9E0EE&labelColor=302D41" />
+    </a>
+    <a href="https://github.com/piqoni/inxidents/stargazers">
+      <img alt="Stars" src="https://img.shields.io/github/stars/piqoni/inxidents?style=for-the-badge&logo=starship&color=c69ff5&logoColor=D9E0EE&labelColor=302D41" />
+    </a>
+</div>
 Inxidents is a minimal configuration, open-source incident management software with alerts and dashboard for your HTTP/S services written in Go.
 
 **Current Features:**
