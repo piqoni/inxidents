@@ -77,3 +77,25 @@
      .brand {
          text-align: center;
      }
+
+     .button-container {
+         position: absolute;
+         bottom: 10px;
+         /* Adjust as needed */
+         right: 10px;
+         /* Adjust as needed */
+         z-index: 1;
+         /* Set a higher value if needed */
+
+     }
+
+     .transparent-button {
+         border: 1px solid white;
+         /* background: transparent; */
+         /* color: white; */
+         /* Set your desired text color */
+         /* padding: 8px 16px; */
+         /* Adjust as needed */
+         /* border-radius: 3px; */
+         /* Adjust as needed */
+     }

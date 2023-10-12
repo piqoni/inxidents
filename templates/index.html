@@ -15,11 +15,44 @@
 <body>
     <h1 class="brand"> in⧕idents</h1>
     <div class="alert"></div>
-    <div class="grid-container"></div>
+    <div class="grid-container">
+        <!-- Button Container -->
+        <!-- <div class="rectangle">
+            <div class="button-container">
+                <button class="transparent-button">ACK</button>
+            </div>
+        </div> -->
+
+    </div>
 
     <!-- TODO Include htmx for ack feature -->
     <!-- <script src="https://unpkg.com/htmx.org@1.9.6"></script> -->
     <script>
+
+        function handleButtonClick(button) {
+            const serviceName = button.getAttribute('name');
+            fetch("/ack", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: serviceName,
+                }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        button.textContent = 'ACKED';
+                    }
+                    console.log('Response:', response);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+        }
+
+
         const evtSource = new EventSource("/events?stream=messages");
         const serviceDivs = new Map();
         evtSource.onmessage = (event) => {
@@ -30,11 +63,18 @@
                 if (eventData.up) {
                     existingDiv.classList.add("green");
                     existingDiv.classList.remove("red");
+                    if(existingDiv.querySelector('.button-container')){
+                        existingDiv.querySelector('.button-container').remove();
+                    }
                     // var textNode = document.createTextNode(eventData.name);
                     // existingDiv.appendChild(textNode); // Set text to Service Name
                 } else {
                     existingDiv.classList.add("red");
                     existingDiv.classList.remove("green");
+                    if (!existingDiv.querySelector('.button-container')) {
+                    const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '"> ACK</button></div> ';
+                    existingDiv.innerHTML += ackButton;
+                    }
                     // existingDiv.scrollIntoView();
                     // existingDiv.textContent = eventData.error; // Set text to error message
                     // var textNode = document.createTextNode(eventData.error);
@@ -50,6 +90,10 @@
                 } else {
                     newElement.classList.add("red");
                     newElement.textContent = eventData.name; // Set text to error message
+                    if (!newElement.querySelector('.button-container')) {
+                        const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '"> ACK</button></div> ';
+                        newElement.innerHTML += ackButton;
+                    }
                     // newElement.textContent = eventData.error; // Set text to error message
                     // newElement.scrollIntoView();
                 }
@@ -73,7 +117,7 @@
             }
 
             // const progressBar = document.querySelector('.progress-bar');
-            progressBar = document.querySelector('[name="' + eventData.name + '"]');
+            progressBar = document.querySelector('.progress-bar[name="' + eventData.name + '"]');
 
             // Calculate the animation duration based on the 'seconds' variable
             const animationDuration = eventData.frequency * 1000 + 'ms';

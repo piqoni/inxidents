@@ -16,7 +16,7 @@ import (
 )
 
 type Service struct {
-	Name         string        `yaml:"name"`
+	Name         string        `yaml:"name" json:"name"`
 	Endpoint     string        `yaml:"endpoint"`
 	Frequency    time.Duration `yaml:"frequency"`
 	ExpectedCode int           `yaml:"expectedCode"`
@@ -28,9 +28,9 @@ type Service struct {
 
 var webhookSlackURL string = os.Getenv("SLACK_WEBHOOK_URL")
 
-func checkURLResponse(url string) (bool, error) {
+func checkURLResponse(s Service) (bool, error) {
 	// Send an HTTP GET request to the specified URL
-	resp, err := http.Get(url)
+	resp, err := http.Get(s.Endpoint)
 	if err != nil {
 		return false, err
 	}
@@ -107,15 +107,24 @@ func sendSlackNotification(message string) {
 //go:embed templates/* static/*
 var templatesFS embed.FS
 
+func updateAckStatus(services []*Service, serviceName string, ack bool) {
+	for _, service := range services {
+		if service.Name == serviceName {
+			service.ack = ack
+			fmt.Println("ack status updated for service:", serviceName)
+			break
+		}
+	}
+}
+
+var services []*Service
+
 func main() {
 	// Read the service.yaml file
 	yamlFile, err := os.ReadFile("config.yaml")
 	if err != nil {
 		log.Fatalf("Error reading YAML file: %v", err)
 	}
-
-	// Create a slice to store the loaded services
-	var services []Service
 
 	// Unmarshal the YAML data into the services slice
 	if err := yaml.Unmarshal(yamlFile, &services); err != nil {
@@ -136,6 +145,30 @@ func main() {
 		}()
 
 		server.ServeHTTP(w, r)
+	})
+
+	http.HandleFunc("/ack", func(w http.ResponseWriter, r *http.Request) {
+		// Check if the request method is POST
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Decode the JSON payload
+		var requestBody Service
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&requestBody)
+		if err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		updateAckStatus(services, requestBody.Name, true)
+
+		// Send a response (you can customize the response as needed)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{"message": "Request received successfully"}`)
 	})
 
 	http.HandleFunc("/up", func(w http.ResponseWriter, r *http.Request) {
@@ -170,16 +203,22 @@ func main() {
 	})
 
 	for _, service := range services {
-		go func(s Service) {
+		go func(s *Service) {
 			for {
-				up, err := checkURLResponse(s.Endpoint)
+				up, err := checkURLResponse(*s)
+				if up && !s.up {
+					message := fmt.Sprintf("🟩 *<%s|%s>* returning *%v*", s.Endpoint, s.Name, s.ExpectedCode)
+					sendSlackNotification(message)
+					s.ack = false
+				}
 				s.up = up
-				sendStream(server, s, err)
-				if err != nil {
+				sendStream(server, *s, err)
+				if err != nil && !s.ack {
 					message := fmt.Sprintf("🟥 *<%s|%s>* returning *%s* instead of *%d*", s.Endpoint, s.Name, err, s.ExpectedCode)
 					sendSlackNotification(message)
 				}
-
+				// Print current ack value of service
+				fmt.Printf("Current ack value of %s is %v\n", s.Name, s.ack)
 				time.Sleep(s.Frequency)
 			}
 		}(service)
