@@ -3,3 +3,4 @@ fly.toml
 .DS_Store
 .air.toml
 config.yaml
+/incidents

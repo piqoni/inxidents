@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/r3labs/sse/v2"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/r3labs/sse/v2"
 )
 
 // TestCheckURLResponse tests the checkURLResponse function.
@@ -22,16 +23,26 @@ func TestCheckURLResponse(t *testing.T) {
 	}()
 	time.Sleep(1 * time.Second) // Wait for the server to start
 
+	okService := Service{
+		Name:         "OKService",
+		Endpoint:     "http://localhost:8081/ok",
+		ExpectedCode: http.StatusOK,
+	}
 	// Test the function with a URL that returns 200 OK
 	urlOK := "http://localhost:8081/ok"
-	resultOK, err := checkURLResponse(urlOK)
+	resultOK, err := checkURLResponse(okService)
 	if err != nil || !resultOK {
 		t.Errorf("Expected checkURLResponse to return true and no error for URL %s, but got %v and %v", urlOK, resultOK, err)
 	}
 
+	errorService := Service{
+		Name:         "ErrorService",
+		Endpoint:     "http://localhost:8081/error",
+		ExpectedCode: http.StatusOK,
+	}
 	// Test the function with a URL that returns an error status code
 	urlError := "http://localhost:8081/error"
-	resultError, err := checkURLResponse(urlError)
+	resultError, err := checkURLResponse(errorService)
 	if err == nil || resultError {
 		t.Errorf("Expected checkURLResponse to return false and an error for URL %s, but got %v and %v", urlError, resultError, err)
 	}
