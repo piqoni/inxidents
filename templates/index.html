@@ -33,7 +33,6 @@
                     if (response.ok) {
                         button.textContent = 'ACKED 🔕';
                     }
-                    console.log('Response:', response);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -48,7 +47,6 @@
             evtSource.onmessage = (event) => {
                 const eventData = JSON.parse(event.data);
                 const acked = eventData.ack ? "ACKED 🔕" : "ACK";
-                console.log(eventData.name, eventData.ack);
 
                 if (serviceDivs.has(eventData.name)) {
                     updateExistingDiv(eventData, acked);
