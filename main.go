@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/r3labs/sse/v2"
@@ -37,7 +38,8 @@ func checkURLResponse(s Service) (bool, error) {
 	defer resp.Body.Close()
 
 	// Check the HTTP status code
-	if resp.StatusCode != http.StatusOK {
+	// TODO handle cases without defined expectedcode to check if the response is http.StatusOK
+	if resp.StatusCode != s.ExpectedCode {
 		return false, fmt.Errorf(resp.Status)
 	}
 	return true, nil
@@ -80,7 +82,8 @@ func sendSlackNotification(message string) {
 	}
 	// disable notifications while developing with an early return TODO
 	// return
-	data := fmt.Sprintf(`{"text":"%s"}`, message)
+	message = strconv.Quote(message)
+	data := fmt.Sprintf(`{"text":%s}`, message)
 	// Create a POST request with the JSON data
 	req, err := http.NewRequest("POST", webhookSlackURL, bytes.NewBuffer([]byte(data)))
 	if err != nil {
@@ -215,11 +218,9 @@ func main() {
 				s.up = up
 				sendStream(server, *s, err)
 				if err != nil && !s.ack {
-					message := fmt.Sprintf("🟥 *<%s|%s>* returning *%s* instead of *%d*", s.Endpoint, s.Name, err, s.ExpectedCode)
+					message := fmt.Sprintf("🟥 *<%s|%s>* returning *%s* instead of *%d*", s.Endpoint, s.Name, err.Error(), s.ExpectedCode)
 					sendSlackNotification(message)
 				}
-				// Print current ack value of service
-				fmt.Printf("Current ack value of %s is %v\n", s.Name, s.ack)
 				time.Sleep(s.Frequency)
 			}
 		}(service)
