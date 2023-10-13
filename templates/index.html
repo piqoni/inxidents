@@ -54,78 +54,103 @@
 
 
         const evtSource = new EventSource("/events?stream=messages");
-        const serviceDivs = new Map();
-        evtSource.onmessage = (event) => {
-            const eventData = JSON.parse(event.data);
-            const acked = eventData.ack === true ? "ACKED" : "ACK";
-            console.log(eventData.name, eventData.ack);
-            if (serviceDivs.has(eventData.name)) {
+            const serviceDivs = new Map();
+
+            evtSource.onmessage = (event) => {
+                const eventData = JSON.parse(event.data);
+                const acked = eventData.ack ? "ACKED" : "ACK";
+                console.log(eventData.name, eventData.ack);
+
+                if (serviceDivs.has(eventData.name)) {
+                    updateExistingDiv(eventData, acked);
+                } else {
+                    createNewDiv(eventData, acked);
+                }
+            };
+
+            function updateExistingDiv(eventData, acked) {
                 const existingDiv = serviceDivs.get(eventData.name);
 
                 if (eventData.up) {
-                    existingDiv.classList.add("green");
-                    existingDiv.classList.remove("red");
-                    if (existingDiv.querySelector('.button-container')) {
-                        existingDiv.querySelector('.button-container').remove();
-                    }
+                    updateDivState(existingDiv, "green", "red");
+                    removeButtonContainer(existingDiv);
                 } else {
-                    existingDiv.classList.add("red");
-                    existingDiv.classList.remove("green");
-                    // Add ACK or ACKED button based on state.
-                    if (existingDiv.querySelector('.button-container')) {
-                        existingDiv.querySelector('.button-container').remove();
-                    }
+                    updateDivState(existingDiv, "red", "green");
+                    removeButtonContainer(existingDiv);
+
                     if (!existingDiv.querySelector('.button-container')) {
-                        const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '">' + acked + '</button></div> ';
+                        const ackButton = createAckButton(eventData.name, acked);
                         existingDiv.innerHTML += ackButton;
                     }
                 }
-            } else {
-                // If it doesn't exist, create a new <div> element and add it to the map
+
+                // Get the progress bar element
+                const progressBar = existingDiv.querySelector(".progress-bar");
+
+                if (progressBar) {
+                    // Calculate the animation duration based on the 'frequency' variable
+                    const animationDuration = eventData.frequency * 1000 + "ms";
+                    // Apply the animation duration to the progress bar
+                    progressBar.style.animationDuration = animationDuration;
+                }
+            }
+
+            function createNewDiv(eventData, acked) {
                 const newElement = document.createElement("div");
 
                 if (eventData.up) {
-                    newElement.classList.add("green");
-                    newElement.textContent = eventData.name; // Set text to Service Name
+                    updateDivState(newElement, "green");
+                    newElement.textContent = eventData.name;
                 } else {
-                    newElement.classList.add("red");
-                    newElement.textContent = eventData.name; // Set text to error message
+                    updateDivState(newElement, "red");
+                    newElement.textContent = eventData.name;
+
                     if (!newElement.querySelector('.button-container')) {
-                        const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '"> ' + acked + '</button></div> ';
+                        const ackButton = createAckButton(eventData.name, acked);
                         newElement.innerHTML += ackButton;
                     }
-                    // newElement.textContent = eventData.error; // Set text to error message
-                    // newElement.scrollIntoView();
                 }
 
                 newElement.classList.add("rectangle");
-                // newElement.setAttribute("name", eventData.name);
-
-                // Create a child <div> for the progress bar
-                const progressBar = document.createElement("div");
-                progressBar.classList.add("progress-bar");
-                progressBar.setAttribute("name", eventData.name);
-
-                // Append the progress bar as a child of newElement
+                const progressBar = createProgressBar(eventData.name);
                 newElement.appendChild(progressBar);
 
-                // Append the new <div> element to the grid container and store it in the map
-                const gridContainer = document.querySelector(".grid-container");
+                // Calculate the animation duration based on the 'frequency' variable
+                const animationDuration = eventData.frequency * 1000 + "ms";
+                // Apply the animation duration to the progress bar
+                progressBar.style.animationDuration = animationDuration;
 
+                const gridContainer = document.querySelector(".grid-container");
                 gridContainer.appendChild(newElement);
+
                 serviceDivs.set(eventData.name, newElement);
             }
 
-            // const progressBar = document.querySelector('.progress-bar');
-            progressBar = document.querySelector('.progress-bar[name="' + eventData.name + '"]');
-
-            // Calculate the animation duration based on the 'seconds' variable
-            const animationDuration = eventData.frequency * 1000 + 'ms';
-            // Apply the animation duration to the progress bar
-            if (progressBar) {
-                progressBar.style.animationDuration = animationDuration;
+            function updateDivState(element, addClass, removeClass) {
+                element.classList.add(addClass);
+                if (removeClass) {
+                    element.classList.remove(removeClass);
+                }
             }
-        };
+
+            function removeButtonContainer(element) {
+                const buttonContainer = element.querySelector('.button-container');
+                if (buttonContainer) {
+                    buttonContainer.remove();
+                }
+            }
+
+            function createAckButton(name, acked) {
+                return `<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="${name}">${acked}</button></div>`;
+            }
+
+            function createProgressBar(name) {
+                const progressBar = document.createElement("div");
+                progressBar.classList.add("progress-bar");
+                progressBar.setAttribute("name", name);
+                return progressBar;
+            }
+
     </script>
 </body>
 
