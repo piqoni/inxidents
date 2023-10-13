@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/r3labs/sse/v2"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/r3labs/sse/v2"
 )
 
 // TestCheckURLResponse tests the checkURLResponse function.
@@ -23,10 +24,9 @@ func TestCheckURLResponse(t *testing.T) {
 	time.Sleep(1 * time.Second) // Wait for the server to start
 
 	okService := Service{
-		// Name:         "OKService",
-		Endpoint: "http://localhost:8081/ok",
-		// Frequency:    1 * time.Second,
-		// ExpectedCode: http.StatusOK,
+		Name:         "OKService",
+		Endpoint:     "http://localhost:8081/ok",
+		ExpectedCode: http.StatusOK,
 	}
 	// Test the function with a URL that returns 200 OK
 	urlOK := "http://localhost:8081/ok"
@@ -36,9 +36,8 @@ func TestCheckURLResponse(t *testing.T) {
 	}
 
 	errorService := Service{
-		Name:     "OKService",
-		Endpoint: "http://localhost:8081/error",
-		// Frequency:    1 * time.Second,
+		Name:         "ErrorService",
+		Endpoint:     "http://localhost:8081/error",
 		ExpectedCode: http.StatusOK,
 	}
 	// Test the function with a URL that returns an error status code
