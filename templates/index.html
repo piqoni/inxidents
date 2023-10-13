@@ -15,20 +15,9 @@
 <body>
     <h1 class="brand"> in⧕idents</h1>
     <div class="alert"></div>
-    <div class="grid-container">
-        <!-- Button Container -->
-        <!-- <div class="rectangle">
-            <div class="button-container">
-                <button class="transparent-button">ACK</button>
-            </div>
-        </div> -->
+    <div class="grid-container"></div>
 
-    </div>
-
-    <!-- TODO Include htmx for ack feature -->
-    <!-- <script src="https://unpkg.com/htmx.org@1.9.6"></script> -->
     <script>
-
         function handleButtonClick(button) {
             const serviceName = button.getAttribute('name');
             fetch("/ack", {
@@ -42,7 +31,7 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        button.textContent = 'ACKED';
+                        button.textContent = 'ACKED 🔕';
                     }
                     console.log('Response:', response);
                 })
@@ -58,7 +47,7 @@
 
             evtSource.onmessage = (event) => {
                 const eventData = JSON.parse(event.data);
-                const acked = eventData.ack ? "ACKED" : "ACK";
+                const acked = eventData.ack ? "ACKED 🔕" : "ACK";
                 console.log(eventData.name, eventData.ack);
 
                 if (serviceDivs.has(eventData.name)) {
