@@ -57,28 +57,28 @@
         const serviceDivs = new Map();
         evtSource.onmessage = (event) => {
             const eventData = JSON.parse(event.data);
+            const acked = eventData.ack === true ? "ACKED" : "ACK";
+            console.log(eventData.name, eventData.ack);
             if (serviceDivs.has(eventData.name)) {
                 const existingDiv = serviceDivs.get(eventData.name);
 
                 if (eventData.up) {
                     existingDiv.classList.add("green");
                     existingDiv.classList.remove("red");
-                    if(existingDiv.querySelector('.button-container')){
+                    if (existingDiv.querySelector('.button-container')) {
                         existingDiv.querySelector('.button-container').remove();
                     }
-                    // var textNode = document.createTextNode(eventData.name);
-                    // existingDiv.appendChild(textNode); // Set text to Service Name
                 } else {
                     existingDiv.classList.add("red");
                     existingDiv.classList.remove("green");
-                    if (!existingDiv.querySelector('.button-container')) {
-                    const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '"> ACK</button></div> ';
-                    existingDiv.innerHTML += ackButton;
+                    // Add ACK or ACKED button based on state.
+                    if (existingDiv.querySelector('.button-container')) {
+                        existingDiv.querySelector('.button-container').remove();
                     }
-                    // existingDiv.scrollIntoView();
-                    // existingDiv.textContent = eventData.error; // Set text to error message
-                    // var textNode = document.createTextNode(eventData.error);
-                    // existingDiv.appendChild(textNode); // Set text to Service Name
+                    if (!existingDiv.querySelector('.button-container')) {
+                        const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '">' + acked + '</button></div> ';
+                        existingDiv.innerHTML += ackButton;
+                    }
                 }
             } else {
                 // If it doesn't exist, create a new <div> element and add it to the map
@@ -91,7 +91,7 @@
                     newElement.classList.add("red");
                     newElement.textContent = eventData.name; // Set text to error message
                     if (!newElement.querySelector('.button-container')) {
-                        const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '"> ACK</button></div> ';
+                        const ackButton = '<div class="button-container"><button class="transparent-button" onclick="handleButtonClick(this)" name="' + eventData.name + '"> ' + acked + '</button></div> ';
                         newElement.innerHTML += ackButton;
                     }
                     // newElement.textContent = eventData.error; // Set text to error message

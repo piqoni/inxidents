@@ -51,6 +51,7 @@ func sendStream(server *sse.Server, s Service, err error) {
 		"expectedCode": s.ExpectedCode,
 		"expectedBody": s.ExpectedBody,
 		"up":           s.up,
+		"ack":          s.ack,
 		"error":        "",
 	}
 
