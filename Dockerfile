@@ -14,6 +14,7 @@ RUN go mod download
 COPY *.go ./
 COPY *.yaml ./
 COPY templates/ ./templates/
+COPY static/ ./static/
 
 
 # Build
