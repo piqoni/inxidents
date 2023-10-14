@@ -28,6 +28,12 @@ type Service struct {
 }
 
 var webhookSlackURL string = os.Getenv("SLACK_WEBHOOK_URL")
+var dashboardEndpoint string = os.Getenv("DASHBOARD_ENDPOINT")
+
+var services []*Service
+
+//go:embed templates/* static/*
+var templatesFS embed.FS
 
 func checkURLResponse(s Service) (bool, error) {
 	// Send an HTTP GET request to the specified URL
@@ -108,9 +114,6 @@ func sendSlackNotification(message string) {
 	}
 }
 
-//go:embed templates/* static/*
-var templatesFS embed.FS
-
 func updateAckStatus(services []*Service, serviceName string, ack bool) {
 	for _, service := range services {
 		if service.Name == serviceName {
@@ -120,8 +123,6 @@ func updateAckStatus(services []*Service, serviceName string, ack bool) {
 		}
 	}
 }
-
-var services []*Service
 
 func main() {
 	// Read the service.yaml file
@@ -190,8 +191,8 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
+	http.HandleFunc("/"+dashboardEndpoint, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" && dashboardEndpoint == "" {
 			http.NotFound(w, r)
 			return
 		}
