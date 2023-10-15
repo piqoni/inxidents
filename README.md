@@ -51,17 +51,29 @@ Sample service:
 2. Run ```flyctl launch```(answer no to DB or Volume creations)
 3. Run ```flyctl deploy``` to deploy
 
-To receive Slack alerts when deploying to fly.io you can add the SLACK_WEBHOOK_URL in the fly.toml file
+To enable Slack alerts when deploying to fly.io you can add the SLACK_WEBHOOK_URL in the fly.toml file
 ```
 [env]
    SLACK_WEBHOOK_URL = "YOUR INCOMING SLACK WEBHOOK URL"
 ```
 
-## Other deployment methods
-You can deploy it via docker as it is containarized or if you get the self-contained binary, you can use systemd to keep the process running.
+## Deploy using Docker
+Pull [inxidents image](https://hub.docker.com/r/piqoni/inxidents) from dockerhub:
+```
+docker pull piqoni/inxidents
+```
 
-TODO: Needs more documentation here.
+Create a directory anywhere in you system and then put your inxidents [config.yaml](https://github.com/piqoni/inxidents/blob/main/config.dev.yaml) file, for example `MYDIR/config.yaml`.
 
+Run the container (-e SLACK_WEBHOOK_URL is optional, only if you want alerts):
+```
+docker run \
+  -p 8080:8080 \
+  -v /PATH/TO/YOUR/MYDIR:/app \
+  -e SLACK_WEBHOOK_URL=YOUR_SLACK_WEBHOOK_URL_HERE \
+  piqoni/inxidents
+```
+Access the dashboard on http://localhost:8080
 
 ## Tech comments / Architecture
 There is no database by design for the time being (if needed in the future, it will likely be SQLite). Apart from the configuration file everything else happens in-memory. The only persistent data history (downtimes history) can be found on Slack alerts and application log files. 
