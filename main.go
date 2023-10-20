@@ -137,6 +137,7 @@ func main() {
 	}
 
 	server := sse.New()
+	server.AutoReplay = false
 	server.CreateStream("messages")
 
 	// Create a new Mux and set the handler
