@@ -76,6 +76,19 @@ func sendStream(server *sse.Server, s Service, err error) {
 	})
 }
 
+func handleNotification(s *Service, up bool, err error) {
+	// Recovering Alert
+	if up && !s.up {
+		sendSlackNotification(fmt.Sprintf("🟩 *<%s|%s>* returning *%v*", s.Endpoint, s.Name, s.ExpectedCode))
+		s.ack = false
+	}
+	s.up = up // update s.up so its used for the recovering alert on next run in case is false
+	// Down Alert
+	if err != nil && !s.ack {
+		sendSlackNotification(fmt.Sprintf("🟥 *<%s|%s>* returning *%s* instead of *%d*", s.Endpoint, s.Name, err.Error(), s.ExpectedCode))
+	}
+}
+
 func sendSlackNotification(message string) {
 	if webhookSlackURL == "" {
 		return
@@ -142,13 +155,6 @@ func main() {
 
 	// Create a new Mux and set the handler
 	http.HandleFunc("/events", func(w http.ResponseWriter, r *http.Request) {
-		go func() {
-			// Received Browser Disconnection
-			<-r.Context().Done()
-			println("The client is disconnected here")
-			return
-		}()
-
 		server.ServeHTTP(w, r)
 	})
 
@@ -211,17 +217,8 @@ func main() {
 		go func(s *Service) {
 			for {
 				up, err := checkURLResponse(*s)
-				if up && !s.up {
-					message := fmt.Sprintf("🟩 *<%s|%s>* returning *%v*", s.Endpoint, s.Name, s.ExpectedCode)
-					sendSlackNotification(message)
-					s.ack = false
-				}
-				s.up = up
+				handleNotification(s, up, err)
 				sendStream(server, *s, err)
-				if err != nil && !s.ack {
-					message := fmt.Sprintf("🟥 *<%s|%s>* returning *%s* instead of *%d*", s.Endpoint, s.Name, err.Error(), s.ExpectedCode)
-					sendSlackNotification(message)
-				}
 				time.Sleep(s.Frequency)
 			}
 		}(service)
