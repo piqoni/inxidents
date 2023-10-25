@@ -87,11 +87,13 @@ flowchart TB
     Service1[Service 1 Check]
     Service2[Service 2 Check]
     Service3[Service 3 Check]
+    SendAlerts[When check fails/recovers]
   end
 
   Main -->|goroutine 1| Service1
   Main -->|goroutine 2| Service2
   Main -->|goroutine 3| Service3
+  SendAlerts -->|Alert Message| Slack
 subgraph Browser Dashboard
   Service1 -->|SSE Stream| EventSource
   Service2 -->|SSE Stream| EventSource
