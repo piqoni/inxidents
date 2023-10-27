@@ -30,9 +30,9 @@ func TestCheckURLResponse(t *testing.T) {
 	}
 	// Test the function with a URL that returns 200 OK
 	urlOK := "http://localhost:8081/ok"
-	resultOK, err := checkURLResponse(okService)
+	resultOK, err := checkService(okService)
 	if err != nil || !resultOK {
-		t.Errorf("Expected checkURLResponse to return true and no error for URL %s, but got %v and %v", urlOK, resultOK, err)
+		t.Errorf("Expected checkService to return true and no error for URL %s, but got %v and %v", urlOK, resultOK, err)
 	}
 
 	errorService := Service{
@@ -42,9 +42,9 @@ func TestCheckURLResponse(t *testing.T) {
 	}
 	// Test the function with a URL that returns an error status code
 	urlError := "http://localhost:8081/error"
-	resultError, err := checkURLResponse(errorService)
+	resultError, err := checkService(errorService)
 	if err == nil || resultError {
-		t.Errorf("Expected checkURLResponse to return false and an error for URL %s, but got %v and %v", urlError, resultError, err)
+		t.Errorf("Expected checkService to return false and an error for URL %s, but got %v and %v", urlError, resultError, err)
 	}
 }
 
