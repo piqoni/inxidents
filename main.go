@@ -24,6 +24,7 @@ type Service struct {
 	ExpectedCode   int           `yaml:"expectedCode"`
 	ContainsString string        `yaml:"containsString"`
 	HttpMethod     string        `yaml:"httpMethod"`
+	DisableAlerts  bool          `yaml:"disableAlerts"`
 	up             bool
 	error          error
 	ack            bool
@@ -110,6 +111,10 @@ func sendStream(server *sse.Server, s Service, err error) {
 }
 
 func handleNotification(s *Service, up bool, err error) {
+	if s.DisableAlerts {
+		return
+	}
+
 	// Recovering Alert
 	if up && !s.up {
 		sendSlackNotification(fmt.Sprintf("🟩 *<%s|%s>* returning *%v*", s.Endpoint, s.Name, s.ExpectedCode))
@@ -259,4 +264,5 @@ func main() {
 
 	http.Handle("/static/", http.FileServer(http.FS(templatesFS)))
 	http.ListenAndServe("0.0.0.0:8080", nil)
+
 }
