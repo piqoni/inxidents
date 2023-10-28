@@ -10,7 +10,10 @@
       <img alt="Stars" src="https://img.shields.io/github/stars/piqoni/inxidents?style=for-the-badge&logo=starship&color=c69ff5&logoColor=D9E0EE&labelColor=302D41" />
     </a>
 </div>
-Inxidents is a minimal configuration, open-source incident management software with alerts and dashboard for your HTTP/S services written in Go.
+Inxidents is a minimal configuration, open-source incident monitoring software with alerts and dashboard for your HTTP/S services written in Go.
+<p align="center">
+    <img src="https://github.com/piqoni/inxidents/assets/3144671/8d2e6800-774e-4d8b-8cab-65e61d16328e"></img>
+</p>
 
 **Current Features:**
 - **Real-time (SSE) Health Dashboard** of your services. Perfect for office screens or similar environments. <img width="220" alt="image" align="right" src="https://github.com/piqoni/inxidents/assets/3144671/f1989610-c895-4646-9d2f-18fe601aff90">
