@@ -45,9 +45,12 @@ Sample service:
   frequency: 1m
   expectedCode: 200
 ```
-- **Name**: Name of service, currently it needs to be unique for each service you check. 
-- **Endpoint**: HTTP/S endpoint
-- **Frequency**:  Frequency of the health check, examples: "300ms", "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+- **name**: Name of service, currently it needs to be unique for each service you check. 
+- **endpoint**: HTTP/S endpoint
+- **frequency**:  Frequency of the health check, examples: "300ms", "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+- **httpMethod**: OPTIONAL - write POST if you are testing POST http Methods. 
+- **containsString**: OPTIONAL - Check if given string exists in the response body. Value type, string: "FAQ" 
+- **disableAlerts**: OPTIONAL - For some services one might want only the dashboard and not alerts, set true to those, default is false. 
 3. To get Slack alerts, add an environmental variable called **SLACK_WEBHOOK_URL** containing the incoming slack webhook url. [More info on it here](https://api.slack.com/messaging/webhooks)
 
 ## Deploy on fly.io
