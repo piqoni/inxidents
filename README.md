@@ -16,7 +16,7 @@ Inxidents is a minimal configuration, open-source incident monitoring software w
 </p>
 
 **Current Features:**
-- **Real-time (SSE) Health Dashboard** of your services. Perfect for office screens or similar environments. <img width="220" alt="image" align="right" src="https://github.com/piqoni/inxidents/assets/3144671/f1989610-c895-4646-9d2f-18fe601aff90">
+- **Real-time (SSE) Health Dashboard** of your services. Perfect for office screens or similar environments.
 - **Slack Alerts** whenever a service goes down 🟥 and recovers 🟩.
 - **ACK** feature (acknowledge a down service will stop further notifications and will display to dashboards the acknowledgment)
 <!-- <img width="449" alt="image" align="right" src="https://github.com/piqoni/inxidents/assets/3144671/1d015cca-4ac3-4b45-9380-d8b3cd1cadea"> -->
