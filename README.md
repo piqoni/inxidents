@@ -32,8 +32,7 @@ Inxidents is a minimal configuration, open-source incident monitoring software w
 # Demo
 [Click for Demo Dashboard](https://inxidents.fly.dev/)
 
-<img width="1438" alt="image" src="https://github.com/piqoni/inxidents/assets/3144671/72727fc1-f9b7-49e8-93f9-ad6039491825">
-
+<img width="1440" alt="image" src="https://github.com/piqoni/inxidents/assets/3144671/35d1333b-6768-4017-bd15-f382eecee7cc">
 
 # Installation / Deployment
 1. ```cp config.dev.yaml config.yaml```
