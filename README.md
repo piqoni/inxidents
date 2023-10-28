@@ -30,7 +30,7 @@ Inxidents is a minimal configuration, open-source incident monitoring software w
 - ... ideas and suggestions are welcome
 
 # Demo
-[Click for Demo Dashboard](https://incidents.fly.dev/)
+[Click for Demo Dashboard](https://inxidents.fly.dev/)
 
 <img width="1438" alt="image" src="https://github.com/piqoni/inxidents/assets/3144671/72727fc1-f9b7-49e8-93f9-ad6039491825">
 
