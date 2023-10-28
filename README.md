@@ -38,7 +38,7 @@ Inxidents is a minimal configuration, open-source incident monitoring software w
 # Installation / Deployment
 1. ```cp config.dev.yaml config.yaml```
 2. Change config.yaml accordingly and add your services:
-Sample service: 
+Example configuration of one service: 
 ```
 - name: Google
   endpoint: https://www.google.com
@@ -48,6 +48,7 @@ Sample service:
 - **name**: Name of service, currently it needs to be unique for each service you check. 
 - **endpoint**: HTTP/S endpoint
 - **frequency**:  Frequency of the health check, examples: "300ms", "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+- **expectedCode**: This is the expected http status code returned from the endpoint. 
 - **httpMethod**: OPTIONAL - write POST if you are testing POST http Methods. 
 - **containsString**: OPTIONAL - Check if given string exists in the response body. Value type, string: "FAQ" 
 - **disableAlerts**: OPTIONAL - For some services one might want only the dashboard and not alerts, set true to those, default is false. 
