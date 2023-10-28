@@ -33,10 +33,8 @@ type Service struct {
 var webhookSlackURL string = os.Getenv("SLACK_WEBHOOK_URL")
 
 func checkService(s Service) (bool, error) {
-	// fmt.Printf("%v", s)
 	var req *http.Request
 	var err error
-	// fmt.Println(s.httpMethod)
 	// Create an HTTP request based on the specified method
 	switch s.HttpMethod {
 	case "GET":
@@ -73,7 +71,7 @@ func checkService(s Service) (bool, error) {
 	// Check if the specified string exists in the response content
 	if s.ContainsString != "" {
 		if !bytes.Contains(body, []byte(s.ContainsString)) {
-			return false, fmt.Errorf("Response does not contain: %s", s.ContainsString)
+			return false, fmt.Errorf("response does not contain: %s", s.ContainsString)
 		}
 	}
 
