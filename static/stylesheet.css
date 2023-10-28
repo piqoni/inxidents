@@ -39,6 +39,11 @@
          background: #00CC99;
      }
 
+     .acked {
+         background-color: orange;
+         background-image: repeating-linear-gradient(120deg, transparent, transparent 10px, rgba(0, 0, 0, 1) 10px, rgba(0, 0, 0, 1) 20px);
+     }
+
      .rectangle {
          margin: 2px;
          width: 100%;
@@ -50,6 +55,14 @@
          border-radius: 5px;
          box-shadow: 5px 5px lightgray;
          position: relative;
+     }
+
+     .rectangle span {
+         background-color: rgba(255, 255, 255, 0.7);
+         /* Adjust the alpha value for transparency */
+         padding: 4px;
+         /* Add padding to make the background visible */
+         border-radius: 2px;
      }
 
      .progress-bar {
@@ -99,4 +112,3 @@
          /* border-radius: 3px; */
          /* Adjust as needed */
      }
-

@@ -110,6 +110,7 @@ func sendStream(server *sse.Server, s Service, err error) {
 
 func handleNotification(s *Service, up bool, err error) {
 	if s.DisableAlerts {
+		s.up = up
 		return
 	}
 
