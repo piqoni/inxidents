@@ -5,6 +5,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"log/slog"
 	"net/http"
@@ -17,31 +18,63 @@ import (
 )
 
 type Service struct {
-	Name         string        `yaml:"name" json:"name"`
-	Endpoint     string        `yaml:"endpoint"`
-	Frequency    time.Duration `yaml:"frequency"`
-	ExpectedCode int           `yaml:"expectedCode"`
-	ExpectedBody string        `yaml:"expectedBody"`
-	up           bool
-	error        error
-	ack          bool
+	Name           string        `yaml:"name" json:"name"`
+	Endpoint       string        `yaml:"endpoint"`
+	Frequency      time.Duration `yaml:"frequency"`
+	ExpectedCode   int           `yaml:"expectedCode"`
+	ContainsString string        `yaml:"containsString"`
+	HttpMethod     string        `yaml:"httpMethod"`
+	DisableAlerts  bool          `yaml:"disableAlerts"`
+	up             bool
+	error          error
+	ack            bool
 }
 
 var webhookSlackURL string = os.Getenv("SLACK_WEBHOOK_URL")
 
-func checkURLResponse(s Service) (bool, error) {
-	// Send an HTTP GET request to the specified URL
-	resp, err := http.Get(s.Endpoint)
+func checkService(s Service) (bool, error) {
+	var req *http.Request
+	var err error
+	// Create an HTTP request based on the specified method
+	switch s.HttpMethod {
+	case "GET":
+		req, err = http.NewRequest("GET", s.Endpoint, nil)
+	case "POST":
+		req, err = http.NewRequest("POST", s.Endpoint, nil)
+	default:
+		// Default to GET if the method is not specified or invalid
+		req, err = http.NewRequest("GET", s.Endpoint, nil)
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	// Send the HTTP request
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return false, err
 	}
 	defer resp.Body.Close()
 
 	// Check the HTTP status code
-	// TODO handle cases without defined expectedcode to check if the response is http.StatusOK
 	if resp.StatusCode != s.ExpectedCode {
 		return false, fmt.Errorf(resp.Status)
 	}
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	// Check if the specified string exists in the response content
+	if s.ContainsString != "" {
+		if !bytes.Contains(body, []byte(s.ContainsString)) {
+			return false, fmt.Errorf("response does not contain: %s", s.ContainsString)
+		}
+	}
+
 	return true, nil
 }
 
@@ -51,7 +84,6 @@ func sendStream(server *sse.Server, s Service, err error) {
 		"endpoint":     s.Endpoint,
 		"frequency":    s.Frequency.Seconds(),
 		"expectedCode": s.ExpectedCode,
-		"expectedBody": s.ExpectedBody,
 		"up":           s.up,
 		"ack":          s.ack,
 		"error":        "",
@@ -77,6 +109,10 @@ func sendStream(server *sse.Server, s Service, err error) {
 }
 
 func handleNotification(s *Service, up bool, err error) {
+	if s.DisableAlerts {
+		return
+	}
+
 	// Recovering Alert
 	if up && !s.up {
 		sendSlackNotification(fmt.Sprintf("🟩 *<%s|%s>* returning *%v*", s.Endpoint, s.Name, s.ExpectedCode))
@@ -85,7 +121,7 @@ func handleNotification(s *Service, up bool, err error) {
 	s.up = up // update s.up so its used for the recovering alert on next run in case is false
 	// Down Alert
 	if err != nil && !s.ack {
-		sendSlackNotification(fmt.Sprintf("🟥 *<%s|%s>* returning *%s* instead of *%d*", s.Endpoint, s.Name, err.Error(), s.ExpectedCode))
+		sendSlackNotification(fmt.Sprintf("🟥 *<%s|%s>* returning *%s*", s.Endpoint, s.Name, err.Error()))
 	}
 }
 
@@ -183,7 +219,7 @@ func main() {
 	})
 
 	http.HandleFunc("/up", func(w http.ResponseWriter, r *http.Request) {
-		// Return with 200 OK if the current time seconds are odd
+		// Return with 200 OK
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -216,7 +252,7 @@ func main() {
 	for _, service := range services {
 		go func(s *Service) {
 			for {
-				up, err := checkURLResponse(*s)
+				up, err := checkService(*s)
 				handleNotification(s, up, err)
 				sendStream(server, *s, err)
 				time.Sleep(s.Frequency)
@@ -226,4 +262,5 @@ func main() {
 
 	http.Handle("/static/", http.FileServer(http.FS(templatesFS)))
 	http.ListenAndServe("0.0.0.0:8080", nil)
+
 }
