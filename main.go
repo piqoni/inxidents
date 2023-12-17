@@ -25,6 +25,7 @@ type Service struct {
 	ContainsString string        `yaml:"containsString"`
 	HttpMethod     string        `yaml:"httpMethod"`
 	DisableAlerts  bool          `yaml:"disableAlerts"`
+	UserAgent      string        `yaml:"userAgent"`
 	up             bool
 	error          error
 	ack            bool
@@ -48,6 +49,11 @@ func checkService(s Service) (bool, error) {
 
 	if err != nil {
 		return false, err
+	}
+
+	// Set the User-Agent header if specified
+	if s.UserAgent != "" {
+		req.Header.Set("User-Agent", s.UserAgent)
 	}
 
 	// Send the HTTP request
