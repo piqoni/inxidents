@@ -50,7 +50,9 @@ Example configuration of one service:
 - **expectedCode**: This is the expected http status code returned from the endpoint. 
 - **httpMethod**: OPTIONAL - write POST if you are testing POST http Methods. 
 - **containsString**: OPTIONAL - Check if given string exists in the response body. Value type, string: "FAQ" 
-- **disableAlerts**: OPTIONAL - For some services one might want only the dashboard and not alerts, set true to those, default is false. 
+- **disableAlerts**: OPTIONAL - For some services one might want only the dashboard and not alerts, set true to those, default is false.
+- **userAgent**: OPTIONAL - Set custom user-agent to requests checking the services. 
+
 3. To get Slack alerts, add an environmental variable called **SLACK_WEBHOOK_URL** containing the incoming slack webhook url. [More info on it here](https://api.slack.com/messaging/webhooks)
 
 ## Deploy on fly.io
