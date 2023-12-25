@@ -26,7 +26,7 @@ type Service struct {
 	HttpMethod     string        `yaml:"httpMethod"`
 	DisableAlerts  bool          `yaml:"disableAlerts"`
 	UserAgent      string        `yaml:"userAgent"`
-	up             bool
+	up             *bool
 	error          error
 	ack            bool
 }
@@ -116,16 +116,17 @@ func sendStream(server *sse.Server, s Service, err error) {
 
 func handleNotification(s *Service, up bool, err error) {
 	if s.DisableAlerts {
-		s.up = up
+		s.up = &up
 		return
 	}
 
 	// Recovering Alert
-	if up && !s.up {
+	if up && s.up != nil && !*s.up {
 		sendSlackNotification(fmt.Sprintf("🟩 *<%s|%s>* returning *%v*", s.Endpoint, s.Name, s.ExpectedCode))
 		s.ack = false
 	}
-	s.up = up // update s.up so its used for the recovering alert on next run in case is false
+	s.up = &up // update s.up so its used for the recovering alert on next run in case is false
+
 	// Down Alert
 	if err != nil && !s.ack {
 		sendSlackNotification(fmt.Sprintf("🟥 *<%s|%s>* returning *%s*", s.Endpoint, s.Name, err.Error()))
