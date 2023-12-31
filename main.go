@@ -27,7 +27,6 @@ type Service struct {
 	DisableAlerts  bool          `yaml:"disableAlerts"`
 	UserAgent      string        `yaml:"userAgent"`
 	up             *bool
-	error          error
 	ack            bool
 }
 
