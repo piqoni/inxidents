@@ -219,14 +219,12 @@ func main() {
 
 		updateAckStatus(services, requestBody.Name, true)
 
-		// Send a response (you can customize the response as needed)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `{"message": "Request received successfully"}`)
 	})
 
 	http.HandleFunc("/up", func(w http.ResponseWriter, r *http.Request) {
-		// Return with 200 OK
 		w.WriteHeader(http.StatusOK)
 	})
 
