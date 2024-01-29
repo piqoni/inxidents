@@ -62,6 +62,11 @@ func checkService(s Service) (bool, error) {
 	}
 	defer resp.Body.Close()
 
+	// If there is no ExpectedCode, default 200
+	if s.ExpectedCode == 0 {
+		s.ExpectedCode = 200
+	}
+
 	// Check the HTTP status code
 	if resp.StatusCode != s.ExpectedCode {
 		return false, fmt.Errorf(resp.Status)
